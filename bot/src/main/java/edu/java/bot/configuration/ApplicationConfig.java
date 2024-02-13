@@ -1,13 +1,29 @@
 package edu.java.bot.configuration;
 
+import edu.java.bot.core.TrackList;
 import jakarta.validation.constraints.NotEmpty;
+import java.util.HashMap;
+import java.util.Map;
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 
-@Validated
+@Configuration
 @ConfigurationProperties(prefix = "app", ignoreUnknownFields = false)
-public record ApplicationConfig(
+@PropertySource("application.yml")
+@Data
+@SuppressWarnings("ImportOrder")
+public class ApplicationConfig {
+
     @NotEmpty
-    String telegramToken
-) {
+    @Value("${telegram-token}")
+    public final String telegramToken = null;
+    public final Map<Long, TrackList> usersWithTrackList;
+
+    public ApplicationConfig() {
+        this.usersWithTrackList = new HashMap<>();
+    }
+
 }
