@@ -2,7 +2,6 @@ package edu.java.bot.core;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.regex.Pattern;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
