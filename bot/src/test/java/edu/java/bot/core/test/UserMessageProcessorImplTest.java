@@ -33,7 +33,7 @@ public class UserMessageProcessorImplTest {
         Command command = userMessageProcessor.process("/start");
         assertTrue(command instanceof StartCommand);
 
-        command = userMessageProcessor.process("/unknown");
+        command = userMessageProcessor.process("aaa");
         assertTrue(command instanceof UnknowCommand);
 
         command = userMessageProcessor.process("/help");
@@ -44,5 +44,8 @@ public class UserMessageProcessorImplTest {
 
         command = userMessageProcessor.process("/untrack");
         assertTrue(command instanceof UntrackCommand);
+
+        command = userMessageProcessor.process("/list");
+        assertTrue(command instanceof ListCommand);
     }
 }
