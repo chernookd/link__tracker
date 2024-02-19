@@ -12,17 +12,20 @@ import edu.java.bot.configuration.ApplicationConfig;
 import edu.java.bot.core.commands.Command;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 
 @Component
+@RequiredArgsConstructor
 @SuppressWarnings({"RegexpSinglelineJava", "MagicNumber"})
 public class BotImpl implements Bot {
-    @Autowired private ApplicationConfig applicationConfig;
+
+    @NonNull
+    private final ApplicationConfig applicationConfig;
     private static TelegramBot bot;
     private static final int NUM_OF_COMMANDS = 5;
-
 
     @PostConstruct
     @Override
