@@ -4,9 +4,7 @@ import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
 import edu.java.bot.configuration.ApplicationConfig;
 import edu.java.bot.core.MySendMessage;
-import org.springframework.stereotype.Component;
 
-@Component
 public class ListCommand implements Command {
     private final ApplicationConfig applicationConfig;
 
