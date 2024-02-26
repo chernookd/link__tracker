@@ -4,7 +4,7 @@ import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
 import edu.java.bot.configuration.ApplicationConfig;
 import edu.java.bot.core.MySendMessage;
-import edu.java.bot.utils.Utils;
+import edu.java.bot.utils.LinkValidator;
 
 public class TrackCommand implements Command {
     private final ApplicationConfig applicationConfig;
@@ -27,12 +27,11 @@ public class TrackCommand implements Command {
     public MySendMessage handle(Update update) {
         String link = update.message().text().substring(command().length()).trim();
         Long userID = update.message().from().id();
-        Utils utils = new Utils();
 
         if (applicationConfig.getUsersWithTrackList() == null || applicationConfig.getUsersWithTrackList().isEmpty()
             || !applicationConfig.getUsersWithTrackList().containsKey(userID)) {
             return new MySendMessage(update.message().chat().id(), "Зарегестрируйтесь /start");
-        } else if (utils.isValidLink(link)) {
+        } else if (LinkValidator.isValidLink(link)) {
             applicationConfig.getUsersWithTrackList().get(userID).track(link);
             return new MySendMessage(update.message().chat().id(), "Начал отслеживание ссылки: " + link);
         }

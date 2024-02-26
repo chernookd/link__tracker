@@ -9,7 +9,7 @@ import com.pengrad.telegrambot.model.User;
 import edu.java.bot.core.MySendMessage;
 import edu.java.bot.core.TrackList;
 
-import edu.java.bot.utils.Utils;
+import edu.java.bot.utils.LinkValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -63,7 +63,6 @@ public class TrackCommandTest {
         Message messageMock = Mockito.mock(Message.class);
         Chat chatMock = Mockito.mock(Chat.class);
         User userMock = Mockito.mock(User.class);
-        Utils utils = Mockito.mock(Utils.class);
 
         when(updateMock.message()).thenReturn(messageMock);
         when(messageMock.text()).thenReturn("/track https://habr.com/ru/articles/172239/");
@@ -71,7 +70,6 @@ public class TrackCommandTest {
         when(chatMock.id()).thenReturn(1L);
         when(messageMock.from()).thenReturn(userMock);
         when(userMock.id()).thenReturn(1L);
-        when(utils.isValidLink("/untrack https://habr.com/ru/articles/172239/")).thenReturn(true);
 
         Map<Long, TrackList> usersWithTrackList = new HashMap<>();
         usersWithTrackList.put(1L, new TrackList(new HashSet<>(Arrays.asList("link1", "link2", "link3"))));
@@ -91,7 +89,6 @@ public class TrackCommandTest {
         Message messageMock = Mockito.mock(Message.class);
         Chat chatMock = Mockito.mock(Chat.class);
         User userMock = Mockito.mock(User.class);
-        Utils utils = Mockito.mock(Utils.class);
 
         when(updateMock.message()).thenReturn(messageMock);
         when(messageMock.text()).thenReturn("/track link");
@@ -103,7 +100,6 @@ public class TrackCommandTest {
         Map<Long, TrackList> usersWithTrackList = new HashMap<>();
         usersWithTrackList.put(1L, new TrackList(Set.of("link")));
         when(applicationConfig.getUsersWithTrackList()).thenReturn(usersWithTrackList);
-        when(utils.isValidLink("link")).thenReturn(true);
 
 
         MySendMessage result = trackCommand.handle(updateMock);

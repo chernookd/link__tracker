@@ -1,6 +1,6 @@
 package edu.java.bot.utils.test;
 
-import edu.java.bot.utils.Utils;
+import edu.java.bot.utils.LinkValidator;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -23,8 +23,7 @@ public class UtilsTest {
     @MethodSource("source")
     @ParameterizedTest
     void linkValidationTest(String linkStr, Boolean correctAnswer) {
-        Utils utils = new Utils();
-        Boolean currentAnswer = utils.isValidLink(linkStr);
+        Boolean currentAnswer = LinkValidator.isValidLink(linkStr);
         assertThat(currentAnswer.equals(correctAnswer)).isTrue();
     }
 }
