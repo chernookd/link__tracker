@@ -21,13 +21,13 @@ import static org.mockito.Mockito.when;
 
 public class StartCommandTest {
 
-    private ApplicationConfig applicationConfig;
+    private TrackList trackList;
     private StartCommand startCommand;
 
     @BeforeEach
     public void setup() {
-        applicationConfig = mock(ApplicationConfig.class);
-        startCommand = new StartCommand(applicationConfig);
+        trackList = mock(TrackList.class);
+        startCommand = new StartCommand(trackList);
     }
 
     @Test
@@ -44,14 +44,14 @@ public class StartCommandTest {
         when(messageMock.from()).thenReturn(userMock);
         when(userMock.id()).thenReturn(1L);
 
-        Map<Long, TrackList> usersWithTrackList = new HashMap<>();
-        when(applicationConfig.getUsersWithTrackList()).thenReturn(usersWithTrackList);
+        Map<Long, Set<String>> usersWithLinks = new HashMap<>();
+        when(trackList.getUsersWithLinks()).thenReturn(usersWithLinks);
 
         String correctAnswer = "Отслеживание началось";
 
         MySendMessage result = startCommand.handle(updateMock);
 
-        assertEquals(result.message().trim(), correctAnswer.trim());
+        assertEquals(correctAnswer.trim(), result.message().trim());
     }
 
     @Test
@@ -68,16 +68,14 @@ public class StartCommandTest {
         when(messageMock.from()).thenReturn(userMock);
         when(userMock.id()).thenReturn(1L);
 
-        Map<Long, TrackList> usersWithTrackList = new HashMap<>();
-        usersWithTrackList.put(1L, new TrackList(Set.of("link1")));
-        when(applicationConfig.getUsersWithTrackList()).thenReturn(usersWithTrackList);
+        Map<Long, Set<String>> usersWithLinks = new HashMap<>();
+        usersWithLinks.put(1L, Set.of("link1"));
+        when(trackList.getUsersWithLinks()).thenReturn(usersWithLinks);
 
-        String correctAnswer = "Аккаунт найден\n" +
-            "Прошлые ссылки : \n" +
-            "link1\n";
+        String correctAnswer = "Аккаунт найден\nПрошлые ссылки : \nlink1\n";
 
         MySendMessage result = startCommand.handle(updateMock);
 
-        assertEquals(result.message().trim(), correctAnswer.trim());
+        assertEquals(correctAnswer.trim(), result.message().trim());
     }
 }

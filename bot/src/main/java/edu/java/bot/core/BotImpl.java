@@ -10,55 +10,71 @@ import com.pengrad.telegrambot.request.SetMyCommands;
 import com.pengrad.telegrambot.response.BaseResponse;
 import edu.java.bot.configuration.ApplicationConfig;
 import edu.java.bot.core.commands.Command;
+import edu.java.bot.core.commands.CommandBuilder;
+import edu.java.bot.core.commands.HelpCommand;
+import edu.java.bot.core.commands.ListCommand;
+import edu.java.bot.core.commands.StartCommand;
+import edu.java.bot.core.commands.TrackCommand;
+import edu.java.bot.core.commands.UntrackCommand;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 
 @Component
-@RequiredArgsConstructor
-@SuppressWarnings({"RegexpSinglelineJava", "MagicNumber"})
 public class BotImpl implements Bot {
 
-    @NonNull
+    private static final int INDEX_OF_START_COMMAND = 0;
+    private static final int INDEX_OF_HELP_COMMAND = 1;
+    private static final int INDEX_OF_LIST_COMMAND = 2;
+    private static final int INDEX_OF_TRACK_COMMAND = 3;
+    private static final int INDEX_OF_UNTRACK_COMMAND = 4;
+
+
     private final ApplicationConfig applicationConfig;
     private static TelegramBot bot;
     private static final int NUM_OF_COMMANDS = 5;
+    Command[] commands = new Command[NUM_OF_COMMANDS];
+    private final TrackList trackList;
+
+    @Autowired
+    public BotImpl(TrackList trackList, ApplicationConfig applicationConfig, StartCommand startCommand,
+        HelpCommand helpCommand, ListCommand listCommand, TrackCommand trackCommand, UntrackCommand untrackCommand) {
+        this.applicationConfig = applicationConfig;
+        this.trackList = trackList;
+
+        commands[INDEX_OF_START_COMMAND] = startCommand;
+        commands[INDEX_OF_HELP_COMMAND] = helpCommand;
+        commands[INDEX_OF_LIST_COMMAND] = listCommand;
+        commands[INDEX_OF_TRACK_COMMAND] = trackCommand;
+        commands[INDEX_OF_UNTRACK_COMMAND] = untrackCommand;
+    }
 
     @PostConstruct
     @Override
     public void start() {
-        bot = new TelegramBot(applicationConfig.telegramToken);
+        bot = new TelegramBot(applicationConfig.getTelegramProperties().getTelegramToken());
         BotCommand[] botCommands = createMyCommands();
-
         bot.execute(new SetMyCommands(botCommands));
 
 
         bot.setUpdatesListener(updates -> {
             process(updates);
-
             return UpdatesListener.CONFIRMED_UPDATES_ALL;
         }, e -> {
             if (e.response() != null) {
                 e.response().errorCode();
                 e.response().description();
-            } else {
-                e.printStackTrace();
             }
         });
     }
 
-    private static BotCommand[] createMyCommands() {
+    private BotCommand[] createMyCommands() {
         BotCommand[] botCommands = new BotCommand[NUM_OF_COMMANDS];
-
-        botCommands[0] = (new BotCommand("/start", "start"));
-        botCommands[1] = (new BotCommand("/help", "help"));
-        botCommands[2] = (new BotCommand("/list", "list"));
-        botCommands[3] = (new BotCommand("/track", "track"));
-        botCommands[4] = (new BotCommand("/untrack", "untrack"));
-
+        for (int i = 0; i < NUM_OF_COMMANDS; i++) {
+            botCommands[i] = (new BotCommand(commands[i].command(), commands[i].description()));
+        }
         return botCommands;
     }
 
@@ -69,12 +85,11 @@ public class BotImpl implements Bot {
 
     @Override
     public int process(List<Update> updates) {
-        UserMessageProcessor userMessageProcessor = new UserMessageProcessorImpl(applicationConfig);
+        UserMessageProcessor userMessageProcessor = new UserMessageProcessorImpl(new CommandBuilder(trackList));
 
         for (Update update : updates) {
             if (update.message() != null && update.message().text() != null && !update.message().text().isEmpty()) {
                 String messageText = update.message().text();
-
                 Command command = userMessageProcessor.process(messageText);
                 MySendMessage mySendMessage = command.handle(update);
                 SendMessage sendMessage = new SendMessage(mySendMessage.chatId(), mySendMessage.message());
@@ -86,7 +101,7 @@ public class BotImpl implements Bot {
 
     @Override
     public void close() {
-
+        bot.shutdown();
     }
 
 

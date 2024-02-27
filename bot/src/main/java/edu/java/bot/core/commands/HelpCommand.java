@@ -2,47 +2,41 @@ package edu.java.bot.core.commands;
 
 import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
-import edu.java.bot.configuration.ApplicationConfig;
 import edu.java.bot.core.MySendMessage;
-import java.util.ArrayList;
+import edu.java.bot.utils.MessageUtils;
 import java.util.List;
+import org.springframework.stereotype.Component;
 
+@Component
 public class HelpCommand implements Command {
+    private static final String COMMAND = "/help";
+    private static final String DESCRIPTION = "Выводит список доступных команд";
+    private final CommandBuilder builder;
 
-    private static final String HELP_COMMAND = "/help";
-
-    private final ApplicationConfig applicationConfig;
-
-    public HelpCommand(ApplicationConfig applicationConfig) {
-        this.applicationConfig = applicationConfig;
+    public HelpCommand(CommandBuilder commandBuilder) {
+        this.builder = commandBuilder;
     }
 
-    public List<Command> buildCommands() {
-        List<Command> commands = new ArrayList<>();
-        commands.add(new HelpCommand(applicationConfig));
-        commands.add(new ListCommand(applicationConfig));
-        commands.add(new StartCommand(applicationConfig));
-        commands.add(new UntrackCommand(applicationConfig));
-        commands.add(new TrackCommand(applicationConfig));
-
-        return commands;
+    public static String getCommandText() {
+        return COMMAND;
     }
 
     @Override
     public String command() {
-        return HELP_COMMAND;
+        return COMMAND;
     }
 
     @Override
     public String description() {
-        return "Выводит список доступных команд";
+        return DESCRIPTION;
     }
 
     @Override
     public MySendMessage handle(Update update) {
-        long chatId = update.message().chat().id();
+        Long chatId = MessageUtils.getChatId(update.message());
         StringBuilder helpCommandMessage = new StringBuilder();
-        List<Command> commands = buildCommands();
+
+        List<Command> commands = builder.buldCommandsList();
         for (Command command : commands) {
             helpCommandMessage.append(command.command()).append(" - ").append(command.description()).append("\n");
         }
@@ -52,7 +46,7 @@ public class HelpCommand implements Command {
 
     @Override
     public boolean supports(Update update) {
-        return update.message().text().equals(HELP_COMMAND);
+        return update.message().text().equals(COMMAND);
     }
 
     @Override

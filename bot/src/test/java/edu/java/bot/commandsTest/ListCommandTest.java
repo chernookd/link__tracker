@@ -22,16 +22,14 @@ import static org.mockito.Mockito.when;
 
 public class ListCommandTest {
 
-    private ApplicationConfig applicationConfig;
+    private TrackList trackList;
     private ListCommand listCommand;
 
     @BeforeEach
     public void setup() {
-        applicationConfig = mock(ApplicationConfig.class);
-        listCommand = new ListCommand(applicationConfig);
+        trackList = mock(TrackList.class);
+        listCommand = new ListCommand(trackList);
     }
-
-
 
     @Test
     public void testHandleWithoutLinks() {
@@ -47,16 +45,15 @@ public class ListCommandTest {
         when(messageMock.from()).thenReturn(userMock);
         when(userMock.id()).thenReturn(1L);
 
-        Map<Long, TrackList> usersWithTrackList = new HashMap<>();
-        when(applicationConfig.getUsersWithTrackList()).thenReturn(usersWithTrackList);
+        Map<Long, Set<String>> usersWithLinks = new HashMap<>();
+        when(trackList.getUsersWithLinks()).thenReturn(usersWithLinks);
 
         String correctAnswer = "Зарегестрируйтесь /start";
 
         MySendMessage result = listCommand.handle(updateMock);
 
-        assertEquals(result.message().trim(), correctAnswer.trim());
+        assertEquals(correctAnswer.trim(), result.message().trim());
     }
-
 
     @Test
     public void testHandleWithLinks() {
@@ -72,17 +69,14 @@ public class ListCommandTest {
         when(messageMock.from()).thenReturn(userMock);
         when(userMock.id()).thenReturn(1L);
 
-        Map<Long, TrackList> usersWithTrackList = new HashMap<>();
-        usersWithTrackList.put(1L, new TrackList(Set.of("link1")));
-        when(applicationConfig.getUsersWithTrackList()).thenReturn(usersWithTrackList);
+        Map<Long, Set<String>> usersWithLinks = new HashMap<>();
+        usersWithLinks.put(1L, Set.of("link1"));
+        when(trackList.getUsersWithLinks()).thenReturn(usersWithLinks);
 
         String correctAnswer = "Ccылки :\nlink1";
 
         MySendMessage result = listCommand.handle(updateMock);
 
-        assertEquals(result.message().trim(), correctAnswer.trim());
+        assertEquals(correctAnswer.trim(), result.message().trim());
     }
-
-
-
 }

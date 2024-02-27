@@ -1,27 +1,18 @@
 package edu.java.bot.core;
 
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import lombok.Data;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 @Data
-@Component
+@Repository
 public class TrackList {
 
-    private Set<String> trackList = new HashSet<>();
+    private Map<Long, Set<String>> usersWithLinks;
 
-    public TrackList(Set<String> trackList) {
-        this.trackList = trackList;
-    }
-
-    public TrackList() {}
-
-    public void track(String link) {
-        trackList.add(link);
-    }
-
-    public void untrack(String link) {
-        trackList.remove(link);
+    public TrackList() {
+        this.usersWithLinks = new HashMap<>();
     }
 }

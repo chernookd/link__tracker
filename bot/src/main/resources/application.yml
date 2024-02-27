@@ -1,4 +1,4 @@
-app:
+telegram:
   telegram-token: ${token}
 
 spring:

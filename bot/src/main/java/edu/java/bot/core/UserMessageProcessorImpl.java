@@ -1,48 +1,51 @@
 package edu.java.bot.core;
 
-
-import edu.java.bot.configuration.ApplicationConfig;
 import edu.java.bot.core.commands.Command;
+import edu.java.bot.core.commands.CommandBuilder;
 import edu.java.bot.core.commands.HelpCommand;
 import edu.java.bot.core.commands.ListCommand;
 import edu.java.bot.core.commands.StartCommand;
 import edu.java.bot.core.commands.TrackCommand;
-import edu.java.bot.core.commands.UnknowCommand;
 import edu.java.bot.core.commands.UntrackCommand;
+import edu.java.bot.utils.MessageUtils;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Component;
 
+
+@Component
 public class UserMessageProcessorImpl implements UserMessageProcessor {
+    CommandBuilder commandBuilder;
 
-    ApplicationConfig applicationConfig;
-
-    public UserMessageProcessorImpl(ApplicationConfig config) {
-        this.applicationConfig = config;
+    public UserMessageProcessorImpl(CommandBuilder commandBuilder) {
+        this.commandBuilder = commandBuilder;
     }
 
     @Override
-    public List<Command> commands() {
+    public List<String> commands() {
+        List<String> commands = new ArrayList<>();
 
-        List<Command> commands = new ArrayList<>();
-        commands.add(new HelpCommand(applicationConfig));
-        commands.add(new ListCommand(applicationConfig));
-        commands.add(new StartCommand(applicationConfig));
-        commands.add(new UntrackCommand(applicationConfig));
-        commands.add(new TrackCommand(applicationConfig));
+        commands.add(HelpCommand.getCommandText());
+        commands.add(StartCommand.getCommandText());
+        commands.add(ListCommand.getCommandText());
+        commands.add(TrackCommand.getCommandText());
+        commands.add(UntrackCommand.getCommandText());
 
         return commands;
     }
 
     @Override
     public Command process(String message) {
-        List<Command> commands = commands();
+        String commandInMessage = MessageUtils.getCommand(message);
+        List<String> commands = commands();
 
-        for (Command command: commands) {
-            if (message.startsWith(command.command())) {
-                return command;
+        for (String command : commands) {
+            if (command.equals(commandInMessage)) {
+                Command resultCommand = commandBuilder.buildCommand(commandInMessage);
+                return resultCommand;
             }
         }
 
-        return new UnknowCommand(message);
+        return new HelpCommand(commandBuilder);
     }
 }

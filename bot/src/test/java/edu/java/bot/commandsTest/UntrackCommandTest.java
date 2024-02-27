@@ -19,18 +19,21 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.testcontainers.shaded.com.google.common.base.CharMatcher.any;
 
 public class UntrackCommandTest {
 
-    private ApplicationConfig applicationConfig;
+    private TrackList trackList;
     private UntrackCommand untrackCommand;
 
     @BeforeEach
     public void setup() {
-        applicationConfig = mock(ApplicationConfig.class);
-        untrackCommand = new UntrackCommand(applicationConfig);
+        trackList = mock(TrackList.class);
+        untrackCommand = new UntrackCommand(trackList);
     }
 
     @Test
@@ -41,71 +44,45 @@ public class UntrackCommandTest {
         User userMock = Mockito.mock(User.class);
 
         when(updateMock.message()).thenReturn(messageMock);
-        when(messageMock.text()).thenReturn("/untrack link");
+        when(messageMock.text()).thenReturn("/untrack https://github.com/chernookd/link__tracker/pull/1");
         when(messageMock.chat()).thenReturn(chatMock);
         when(chatMock.id()).thenReturn(1L);
         when(messageMock.from()).thenReturn(userMock);
         when(userMock.id()).thenReturn(1L);
 
-        Map<Long, TrackList> usersWithTrackList = new HashMap<>();
-        when(applicationConfig.getUsersWithTrackList()).thenReturn(usersWithTrackList);
+        Map<Long, Set<String>> usersWithLinks = new HashMap<>();
+        when(trackList.getUsersWithLinks()).thenReturn(usersWithLinks);
 
         String correctAnswer = "Зарегестрируйтесь /start";
 
         MySendMessage result = untrackCommand.handle(updateMock);
 
-        assertEquals(result.message().trim(), correctAnswer.trim());
+        assertEquals(correctAnswer.trim(), result.message().trim());
     }
 
     @Test
-    public void testHandleWithValidLink() {
+    public void testHandleWithLinks() {
         Update updateMock = Mockito.mock(Update.class);
         Message messageMock = Mockito.mock(Message.class);
         Chat chatMock = Mockito.mock(Chat.class);
         User userMock = Mockito.mock(User.class);
 
         when(updateMock.message()).thenReturn(messageMock);
-        when(messageMock.text()).thenReturn("/untrack https://habr.com/ru/articles/172239/");
+        when(messageMock.text()).thenReturn("/untrack https://github.com/chernookd/link__tracker/pull/1");
         when(messageMock.chat()).thenReturn(chatMock);
         when(chatMock.id()).thenReturn(1L);
         when(messageMock.from()).thenReturn(userMock);
         when(userMock.id()).thenReturn(1L);
 
-        Map<Long, TrackList> usersWithTrackList = new HashMap<>();
-        usersWithTrackList.put(1L, new TrackList(new HashSet<>(Arrays.asList("link1", "link2", "https://habr.com/ru/articles/172239/"))));
-        when(applicationConfig.getUsersWithTrackList()).thenReturn(usersWithTrackList);
+        Set<String> links = new HashSet<>(Set.of("https://github.com/chernookd/link__tracker/pull/1"));
+        Map<Long, Set<String>> usersWithLinks = new HashMap<>(Map.of(1L, links));
+        when(trackList.getUsersWithLinks()).thenReturn(usersWithLinks);
 
-
-        String correctAnswer = "Удалил ссылку https://habr.com/ru/articles/172239/";
-
-        MySendMessage result = untrackCommand.handle(updateMock);
-
-        assertEquals(result.message().trim(), correctAnswer.trim());
-    }
-
-    @Test
-    public void testHandleWithInvalidLink() {
-        Update updateMock = Mockito.mock(Update.class);
-        Message messageMock = Mockito.mock(Message.class);
-        Chat chatMock = Mockito.mock(Chat.class);
-        User userMock = Mockito.mock(User.class);
-
-        when(updateMock.message()).thenReturn(messageMock);
-        when(messageMock.text()).thenReturn("/untrack link");
-        when(messageMock.chat()).thenReturn(chatMock);
-        when(chatMock.id()).thenReturn(1L);
-        when(messageMock.from()).thenReturn(userMock);
-        when(userMock.id()).thenReturn(1L);
-
-        Map<Long, TrackList> usersWithTrackList = new HashMap<>();
-        usersWithTrackList.put(1L, new TrackList(Set.of("link")));
-        when(applicationConfig.getUsersWithTrackList()).thenReturn(usersWithTrackList);
-
+        String correctAnswer = "Удалил ссылку https://github.com/chernookd/link__tracker/pull/1";
 
         MySendMessage result = untrackCommand.handle(updateMock);
-        String correctResult = "Некорректная ссылка link";
 
-        assertEquals(result.message(), correctResult);
-
+        assertEquals(correctAnswer, result.message());
+        assertFalse(links.contains("https://github.com/chernookd/link__tracker/pull/1"));
     }
 }

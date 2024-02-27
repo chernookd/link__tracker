@@ -24,13 +24,13 @@ import static org.mockito.Mockito.when;
 
 public class TrackCommandTest {
 
-    private ApplicationConfig applicationConfig;
+    private TrackList trackList;
     private TrackCommand trackCommand;
 
     @BeforeEach
     public void setup() {
-        applicationConfig = mock(ApplicationConfig.class);
-        trackCommand = new TrackCommand(applicationConfig);
+        trackList = mock(TrackList.class);
+        trackCommand = new TrackCommand(trackList);
     }
 
     @Test
@@ -41,71 +41,44 @@ public class TrackCommandTest {
         User userMock = Mockito.mock(User.class);
 
         when(updateMock.message()).thenReturn(messageMock);
-        when(messageMock.text()).thenReturn("/track link");
+        when(messageMock.text()).thenReturn("/track https://github.com/chernookd/link__tracker/pull/1");
         when(messageMock.chat()).thenReturn(chatMock);
         when(chatMock.id()).thenReturn(1L);
         when(messageMock.from()).thenReturn(userMock);
         when(userMock.id()).thenReturn(1L);
 
-        Map<Long, TrackList> usersWithTrackList = new HashMap<>();
-        when(applicationConfig.getUsersWithTrackList()).thenReturn(usersWithTrackList);
+        Map<Long, Set<String>> usersWithLinks = new HashMap<>();
+        when(trackList.getUsersWithLinks()).thenReturn(usersWithLinks);
 
         String correctAnswer = "Зарегестрируйтесь /start";
 
         MySendMessage result = trackCommand.handle(updateMock);
 
-        assertEquals(result.message().trim(), correctAnswer.trim());
+        assertEquals(correctAnswer.trim(), result.message().trim());
     }
 
     @Test
-    public void testHandleWithValidLink() {
+    public void testHandleWithLinks() {
         Update updateMock = Mockito.mock(Update.class);
         Message messageMock = Mockito.mock(Message.class);
         Chat chatMock = Mockito.mock(Chat.class);
         User userMock = Mockito.mock(User.class);
 
         when(updateMock.message()).thenReturn(messageMock);
-        when(messageMock.text()).thenReturn("/track https://habr.com/ru/articles/172239/");
+        when(messageMock.text()).thenReturn("/track https://github.com/chernookd/link__tracker/pull/1");
         when(messageMock.chat()).thenReturn(chatMock);
         when(chatMock.id()).thenReturn(1L);
         when(messageMock.from()).thenReturn(userMock);
         when(userMock.id()).thenReturn(1L);
 
-        Map<Long, TrackList> usersWithTrackList = new HashMap<>();
-        usersWithTrackList.put(1L, new TrackList(new HashSet<>(Arrays.asList("link1", "link2", "link3"))));
-        when(applicationConfig.getUsersWithTrackList()).thenReturn(usersWithTrackList);
+        Map<Long, Set<String>> usersWithLinks = new HashMap<>();
+        usersWithLinks.put(1L, new HashSet<>());
+        when(trackList.getUsersWithLinks()).thenReturn(usersWithLinks);
 
-
-        String correctAnswer = "Начал отслеживание ссылки: https://habr.com/ru/articles/172239/";
-
-        MySendMessage result = trackCommand.handle(updateMock);
-
-        assertEquals(result.message().trim(), correctAnswer.trim());
-    }
-
-    @Test
-    public void testHandleWithInvalidLink() {
-        Update updateMock = Mockito.mock(Update.class);
-        Message messageMock = Mockito.mock(Message.class);
-        Chat chatMock = Mockito.mock(Chat.class);
-        User userMock = Mockito.mock(User.class);
-
-        when(updateMock.message()).thenReturn(messageMock);
-        when(messageMock.text()).thenReturn("/track link");
-        when(messageMock.chat()).thenReturn(chatMock);
-        when(chatMock.id()).thenReturn(1L);
-        when(messageMock.from()).thenReturn(userMock);
-        when(userMock.id()).thenReturn(1L);
-
-        Map<Long, TrackList> usersWithTrackList = new HashMap<>();
-        usersWithTrackList.put(1L, new TrackList(Set.of("link")));
-        when(applicationConfig.getUsersWithTrackList()).thenReturn(usersWithTrackList);
-
+        String correctAnswer = "Начал отслеживание ссылки: https://github.com/chernookd/link__tracker/pull/1";
 
         MySendMessage result = trackCommand.handle(updateMock);
-        String correctResult = "Некорректная ссылка link";
 
-        assertEquals(result.message(), correctResult);
-
+        assertEquals(correctAnswer.trim(), result.message().trim());
     }
 }

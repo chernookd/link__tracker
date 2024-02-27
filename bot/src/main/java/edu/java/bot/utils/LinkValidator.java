@@ -1,9 +1,9 @@
 package edu.java.bot.utils;
 
-import lombok.experimental.UtilityClass;
-import org.springframework.http.HttpStatus;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import lombok.experimental.UtilityClass;
+import org.springframework.http.HttpStatus;
 
 @UtilityClass
 public class LinkValidator {

@@ -2,40 +2,49 @@ package edu.java.bot.core.commands;
 
 import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
-import edu.java.bot.configuration.ApplicationConfig;
 import edu.java.bot.core.MySendMessage;
+import edu.java.bot.core.TrackList;
 import edu.java.bot.utils.LinkValidator;
+import edu.java.bot.utils.MessageUtils;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UntrackCommand implements Command {
 
-    private final ApplicationConfig applicationConfig;
+    private final TrackList list;
+    private static final String DESCRIPTION =  " 'ссылка' - удаляет заданную ссылку из списка отслеживаемых\n";
+    private static final String COMMAND = "/untrack";
 
-    public UntrackCommand(ApplicationConfig applicationConfig) {
-        this.applicationConfig = applicationConfig;
+    public UntrackCommand(TrackList list) {
+        this.list = list;
     }
 
     @Override
     public String command() {
-        return "/untrack";
+        return COMMAND;
     }
 
     @Override
     public String description() {
-        return " 'ссылка' - удаляет заданную ссылку из списка отслеживаемых\n";
+        return DESCRIPTION;
+    }
+
+    public static String getCommandText() {
+        return COMMAND;
     }
 
     @Override
     public MySendMessage handle(Update update) {
-        String link = update.message().text().substring(command().length()).trim();
-        Long userID = update.message().from().id();
+        String link = MessageUtils.getLink(update.message(), COMMAND);
+        Long userID = MessageUtils.getUserId(update.message());
 
-        if (applicationConfig.getUsersWithTrackList() == null || applicationConfig.getUsersWithTrackList().isEmpty()
-            || !applicationConfig.getUsersWithTrackList().containsKey(userID)) {
+        if (list.getUsersWithLinks() == null || list.getUsersWithLinks().isEmpty()
+            || !list.getUsersWithLinks().containsKey(userID)) {
             return new MySendMessage(update.message().chat().id(), "Зарегестрируйтесь /start");
         }
 
         if (LinkValidator.isValidLink(link)) {
-            applicationConfig.getUsersWithTrackList().get(userID).untrack(link);
+            list.getUsersWithLinks().get(userID).remove(link);
             return new MySendMessage(update.message().chat().id(), "Удалил ссылку " + link);
         }
         return new MySendMessage(update.message().chat().id(), "Некорректная ссылка" + " link");

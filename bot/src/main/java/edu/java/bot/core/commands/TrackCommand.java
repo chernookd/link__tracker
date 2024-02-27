@@ -2,37 +2,46 @@ package edu.java.bot.core.commands;
 
 import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
-import edu.java.bot.configuration.ApplicationConfig;
 import edu.java.bot.core.MySendMessage;
+import edu.java.bot.core.TrackList;
 import edu.java.bot.utils.LinkValidator;
+import edu.java.bot.utils.MessageUtils;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TrackCommand implements Command {
-    private final ApplicationConfig applicationConfig;
+    private final TrackList list;
+    private static final String DESCRIPTION =  " 'ссылка' - отслеживает заданную ссылку\n";
+    private static final String COMMAND = "/track";
 
-    public TrackCommand(ApplicationConfig applicationConfig) {
-        this.applicationConfig = applicationConfig;
+    public TrackCommand(TrackList list) {
+        this.list = list;
+    }
+
+    public static String getCommandText() {
+        return COMMAND;
     }
 
     @Override
     public String command() {
-        return "/track";
+        return COMMAND;
     }
 
     @Override
     public String description() {
-        return " 'ссылка' - отслеживает заданную ссылку\n";
+        return DESCRIPTION;
     }
 
     @Override
     public MySendMessage handle(Update update) {
-        String link = update.message().text().substring(command().length()).trim();
-        Long userID = update.message().from().id();
+        String link = MessageUtils.getLink(update.message(), COMMAND);
+        Long userID = MessageUtils.getUserId(update.message());
 
-        if (applicationConfig.getUsersWithTrackList() == null || applicationConfig.getUsersWithTrackList().isEmpty()
-            || !applicationConfig.getUsersWithTrackList().containsKey(userID)) {
+        if (list.getUsersWithLinks() == null || list.getUsersWithLinks().isEmpty()
+            || !list.getUsersWithLinks().containsKey(userID)) {
             return new MySendMessage(update.message().chat().id(), "Зарегестрируйтесь /start");
         } else if (LinkValidator.isValidLink(link)) {
-            applicationConfig.getUsersWithTrackList().get(userID).track(link);
+            list.getUsersWithLinks().get(userID).add(link);
             return new MySendMessage(update.message().chat().id(), "Начал отслеживание ссылки: " + link);
         }
         return new MySendMessage(update.message().chat().id(), "Некорректная ссылка " + link);

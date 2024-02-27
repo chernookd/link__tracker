@@ -4,7 +4,7 @@ import edu.java.bot.core.commands.Command;
 import java.util.List;
 
 public interface UserMessageProcessor {
-    List<Command> commands();
+    List<String> commands();
 
     Command process(String message);
 }
