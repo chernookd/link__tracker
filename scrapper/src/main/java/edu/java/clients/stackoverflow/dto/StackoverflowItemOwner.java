@@ -7,10 +7,10 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class StackoverflowItemOwner {
+
     @JsonProperty("account_id")
     private long accountId;
 
-    @JsonProperty("reputation")
     private int reputation;
 
     @JsonProperty("user_id")

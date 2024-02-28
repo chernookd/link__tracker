@@ -148,11 +148,7 @@ public class GithubClientTest {
         correctId = 755153967;
         correctName = "link__tracker";
         githubClient = new GithubClientImpl(webClient);
-    }
 
-
-    @Test
-    public void testGitHubClient() {
         stubFor(
             get(urlPathMatching("/repos/" + OWNER_NAME + "/" + REPOS))
                 .willReturn(aResponse()
@@ -160,8 +156,11 @@ public class GithubClientTest {
                     .withHeader("Content-Type", "application/json")
                     .withBody(BODY))
         );
+    }
 
 
+    @Test
+    public void testGitHubClient() {
         GithubResponse response = githubClient.fetch(OWNER_NAME, REPOS).block();
 
 

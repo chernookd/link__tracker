@@ -21,7 +21,6 @@ public class StackoverflowItem {
     @JsonProperty("answer_count")
     private int answerCount;
 
-    @JsonProperty("score")
     private int score;
 
     @JsonProperty("creation_date")

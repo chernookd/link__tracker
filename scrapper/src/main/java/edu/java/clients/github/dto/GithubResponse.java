@@ -7,10 +7,8 @@ import lombok.Data;
 @Data
 public class GithubResponse {
 
-    @JsonProperty("id")
     private long id;
 
-    @JsonProperty("name")
     private String name;
 
     @JsonProperty("updated_at")

@@ -1,8 +1,6 @@
 package edu.java.clients.github;
 
 import edu.java.clients.github.dto.GithubResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -11,20 +9,20 @@ import reactor.core.publisher.Mono;
 @Component
 public class GithubClientImpl implements GithubClient {
 
-    private final WebClient webClient;
+    private final WebClient gitHubWebClient;
 
-    @Autowired
-    public GithubClientImpl(@Qualifier("gitHubWebClient") WebClient webClient) {
-        this.webClient = webClient;
+    public GithubClientImpl(WebClient gitHubWebClient) {
+        this.gitHubWebClient = gitHubWebClient;
     }
 
     public Mono<GithubResponse> fetch(String owner, String repos) {
-        Mono<GithubResponse> githubResponseMono = webClient.get()
-            .uri(owner + "/" + repos)
+        Mono<GithubResponse> githubResponseMono = gitHubWebClient.get()
+            .uri(uriBuilder -> uriBuilder
+                .path("/{owner}/{repos}")
+                .build(owner, repos))
             .retrieve()
             .bodyToMono(GithubResponse.class);
 
         return githubResponseMono;
     }
-
 }

@@ -1,8 +1,6 @@
 package edu.java.clients.stackoverflow;
 
 import edu.java.clients.stackoverflow.dto.StackoverflowResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -10,19 +8,22 @@ import reactor.core.publisher.Mono;
 @Component
 public class StackoverflowClientImpl implements StackoverflowClient {
 
-    private final WebClient webClient;
+    private final WebClient stackOverflowWebClient;
 
-    @Autowired
-    public StackoverflowClientImpl(@Qualifier("stackOverflowWebClient") WebClient webClient) {
-        this.webClient = webClient;
+    public StackoverflowClientImpl(WebClient stackOverflowWebClient) {
+        this.stackOverflowWebClient = stackOverflowWebClient;
     }
 
 
     @Override
     public Mono<StackoverflowResponse> fetch(long id) {
-        Mono<StackoverflowResponse> stackoverflowResponseMono = webClient.get()
-            .uri(id + "?order=desc&sort=activity&site=stackoverflow")
-            .retrieve()
+        Mono<StackoverflowResponse> stackoverflowResponseMono = stackOverflowWebClient.get()
+            .uri(uriBuilder -> uriBuilder
+                .path("/{id}")
+                .queryParam("order", "desc")
+                .queryParam("sort", "activity")
+                .queryParam("site", "stackoverflow")
+                .build(id))            .retrieve()
             .bodyToMono(StackoverflowResponse.class);
 
         return stackoverflowResponseMono;

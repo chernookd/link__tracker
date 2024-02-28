@@ -94,10 +94,6 @@ public class StackOverFlowClientTest {
                 ID
             )
         );
-    }
-
-    @Test
-    public void testStackOverFlowClient() {
         stubFor(
             get(urlPathMatching("/2.3/questions/" + ID))
                 .willReturn(aResponse()
@@ -105,8 +101,10 @@ public class StackOverFlowClientTest {
                     .withHeader("Content-Type", "application/json")
                     .withBody(BODY))
         );
+    }
 
-
+    @Test
+    public void testStackOverFlowClient() {
         StackoverflowResponse response = stackOverflowClient.fetch(ID).block();
         assertThat(response).isNotNull();
         List<StackoverflowItem> actualItems = response.getItems();
