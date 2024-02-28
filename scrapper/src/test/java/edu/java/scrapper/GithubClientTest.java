@@ -23,7 +23,11 @@ public class GithubClientTest {
     static final String BASE_URL = "http://localhost:8080/repos/";
     private static final String OWNER_NAME = "chernookd";
     private static final String REPOS = "link__tracker";
-
+    private GithubOwner correctOwner;
+    private OffsetDateTime correctUpdatedAtTime;
+    private long correctId;
+    private String correctName;
+    private GithubClientImpl githubClient;
     private static final String BODY = """
         {
            "id": 755153967,
@@ -131,12 +135,21 @@ public class GithubClientTest {
            "subscribers_count": 1
          }""";
 
+
+
+
     private WebClient webClient;
 
     @BeforeEach
     public void setup() {
         webClient = WebClient.builder().baseUrl(BASE_URL).build();
+        correctOwner = new GithubOwner(OWNER_NAME, 130858532);
+        correctUpdatedAtTime = OffsetDateTime.parse("2024-02-09T14:35:30Z");
+        correctId = 755153967;
+        correctName = "link__tracker";
+        githubClient = new GithubClientImpl(webClient);
     }
+
 
     @Test
     public void testGitHubClient() {
@@ -147,17 +160,12 @@ public class GithubClientTest {
                     .withHeader("Content-Type", "application/json")
                     .withBody(BODY))
         );
-        GithubClientImpl githubClient = new GithubClientImpl(webClient);
+
 
         GithubResponse response = githubClient.fetch(OWNER_NAME, REPOS).block();
 
-        GithubOwner correctOwner = new GithubOwner(OWNER_NAME, 130858532);
-        OffsetDateTime correctUpdatedAtTime = OffsetDateTime.parse("2024-02-09T14:35:30Z");
-        long correctId = 755153967;
-        String correctName = "link__tracker";
 
-
-        assert response != null;
+        assertThat(response).isNotNull();
         assertThat(response.getId()).isEqualTo(correctId);
         assertThat(response.getName()).isEqualTo(correctName);
         assertThat(response.getUpdatedAt()).isEqualTo(correctUpdatedAtTime);

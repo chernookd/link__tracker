@@ -1,5 +1,6 @@
 package edu.java.scrapper;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import edu.java.clients.stackoverflow.StackoverflowClientImpl;
@@ -24,7 +25,17 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @ExtendWith(WireMockExtension.class)
 public class StackOverFlowClientTest {
 
+    private StackoverflowClientImpl stackOverflowClient;
+    private StackoverflowItemOwner correctOwner;
+    private OffsetDateTime expectedCreationDate;
+    private List<StackoverflowItem> correctItemsList;
+
     static final String BASE_URL = "http://localhost:8080/2.3/questions/";
+    private static final int SCORE = 0;
+    private static final boolean IS_ANSWERED = false;
+    private static final int VIEW_COUNT = 3;
+    private static final int ANSWER_COUNT = 0;
+
     private static final long ID = 78052845L;
     private static final String BODY = """
         {
@@ -68,6 +79,21 @@ public class StackOverFlowClientTest {
     @BeforeEach
     public void setup() {
         webClient = WebClient.builder().baseUrl(BASE_URL).build();
+        stackOverflowClient = new StackoverflowClientImpl(webClient);
+        correctOwner = new StackoverflowItemOwner(30245120,
+            1, 23178971, "chandan gowda");
+        expectedCreationDate = Instant.ofEpochSecond(1708785746).atOffset(ZoneOffset.UTC);
+        correctItemsList = List.of(
+            new StackoverflowItem(
+                correctOwner,
+                IS_ANSWERED,
+                VIEW_COUNT,
+                ANSWER_COUNT,
+                SCORE,
+                expectedCreationDate,
+                ID
+            )
+        );
     }
 
     @Test
@@ -80,26 +106,11 @@ public class StackOverFlowClientTest {
                     .withBody(BODY))
         );
 
-        StackoverflowClientImpl stackOverflowClient = new StackoverflowClientImpl(webClient);
 
         StackoverflowResponse response = stackOverflowClient.fetch(ID).block();
         assertThat(response).isNotNull();
         List<StackoverflowItem> actualItems = response.getItems();
 
-        StackoverflowItemOwner correctOwner = new StackoverflowItemOwner(30245120,
-            1, 23178971, "chandan gowda");
-        OffsetDateTime expectedCreationDate = Instant.ofEpochSecond(1708785746).atOffset(ZoneOffset.UTC);
-        List<StackoverflowItem> correctItemsList = List.of(
-            new StackoverflowItem(
-                correctOwner,
-                false,
-                3,
-                0,
-                0,
-                expectedCreationDate,
-                    ID
-            )
-        );
 
         assertThat(actualItems).isEqualTo(correctItemsList);
     }
