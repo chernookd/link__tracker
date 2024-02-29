@@ -4,8 +4,8 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.repository.InMemoryTrackRepository;
 import edu.java.bot.utils.MessageUtils;
-import java.util.HashSet;
 import edu.java.bot.utils.UpdateUtils;
+import java.util.HashSet;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
