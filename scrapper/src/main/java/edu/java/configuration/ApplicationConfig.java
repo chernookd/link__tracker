@@ -11,7 +11,7 @@ import org.springframework.validation.annotation.Validated;
 public record ApplicationConfig(
     @NotNull
     @Bean
-        Scheduler scheduler,
+    Scheduler scheduler,
     BaseUrls urls
 ) {
     public record Scheduler(boolean enable, @NotNull Duration interval, @NotNull Duration delay) {

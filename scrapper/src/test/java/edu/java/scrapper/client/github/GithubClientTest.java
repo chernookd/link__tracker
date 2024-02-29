@@ -1,4 +1,4 @@
-package edu.java.scrapper;
+package edu.java.scrapper.client.github;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
@@ -161,7 +161,7 @@ public class GithubClientTest {
 
     @Test
     public void testGitHubClient() {
-        GithubResponse response = githubClient.fetch(OWNER_NAME, REPOS).block();
+        GithubResponse response = githubClient.fetch(OWNER_NAME, REPOS);
 
 
         assertThat(response).isNotNull();

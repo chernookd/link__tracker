@@ -1,4 +1,4 @@
-package edu.java.scrapper;
+package edu.java.scrapper.client.stackoverflow;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
@@ -105,7 +105,7 @@ public class StackOverFlowClientTest {
 
     @Test
     public void testStackOverFlowClient() {
-        StackoverflowResponse response = stackOverflowClient.fetch(ID).block();
+        StackoverflowResponse response = stackOverflowClient.fetch(ID);
         assertThat(response).isNotNull();
         List<StackoverflowItem> actualItems = response.getItems();
 
