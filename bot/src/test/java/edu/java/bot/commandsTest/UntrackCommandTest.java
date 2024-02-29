@@ -1,43 +1,38 @@
 package edu.java.bot.commandsTest;
 
-import edu.java.bot.configuration.ApplicationConfig;
 import com.pengrad.telegrambot.model.Chat;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.User;
-import edu.java.bot.core.MySendMessage;
-import edu.java.bot.core.TrackList;
+import com.pengrad.telegrambot.request.SendMessage;
+import edu.java.bot.repository.InMemoryTrackRepository;
 
-import edu.java.bot.core.commands.UntrackCommand;
-import edu.java.bot.utils.LinkValidator;
+import edu.java.bot.service.command.UntrackCommand;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Mockito.doAnswer;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.testcontainers.shaded.com.google.common.base.CharMatcher.any;
 
 public class UntrackCommandTest {
-
-    private TrackList trackList;
+    private InMemoryTrackRepository trackList;
     private UntrackCommand untrackCommand;
 
     @BeforeEach
     public void setup() {
-        trackList = mock(TrackList.class);
+        trackList = mock(InMemoryTrackRepository.class);
         untrackCommand = new UntrackCommand(trackList);
     }
 
     @Test
     public void testHandleWithoutLinks() {
+        String correctAnswer = "Зарегестрируйтесь /start";
         Update updateMock = Mockito.mock(Update.class);
         Message messageMock = Mockito.mock(Message.class);
         Chat chatMock = Mockito.mock(Chat.class);
@@ -53,15 +48,16 @@ public class UntrackCommandTest {
         Map<Long, Set<String>> usersWithLinks = new HashMap<>();
         when(trackList.getUsersWithLinks()).thenReturn(usersWithLinks);
 
-        String correctAnswer = "Зарегестрируйтесь /start";
 
-        MySendMessage result = untrackCommand.handle(updateMock);
+        SendMessage result = untrackCommand.handle(updateMock);
+        SendMessage correct = new SendMessage(1L, correctAnswer);
 
-        assertEquals(correctAnswer.trim(), result.message().trim());
+        assertTrue(correct.toWebhookResponse().equals(result.toWebhookResponse()));
     }
 
     @Test
     public void testHandleWithLinks() {
+        String correctAnswer = "Удалил ссылку https://github.com/chernookd/link__tracker/pull/1";
         Update updateMock = Mockito.mock(Update.class);
         Message messageMock = Mockito.mock(Message.class);
         Chat chatMock = Mockito.mock(Chat.class);
@@ -78,11 +74,10 @@ public class UntrackCommandTest {
         Map<Long, Set<String>> usersWithLinks = new HashMap<>(Map.of(1L, links));
         when(trackList.getUsersWithLinks()).thenReturn(usersWithLinks);
 
-        String correctAnswer = "Удалил ссылку https://github.com/chernookd/link__tracker/pull/1";
+        SendMessage result = untrackCommand.handle(updateMock);
+        SendMessage correct = new SendMessage(1L, correctAnswer);
 
-        MySendMessage result = untrackCommand.handle(updateMock);
-
-        assertEquals(correctAnswer, result.message());
+        assertTrue(correct.toWebhookResponse().equals(result.toWebhookResponse()));
         assertFalse(links.contains("https://github.com/chernookd/link__tracker/pull/1"));
     }
 }

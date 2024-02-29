@@ -1,21 +1,21 @@
-package edu.java.bot.core.commands;
+package edu.java.bot.service.command;
 
-import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
-import edu.java.bot.core.MySendMessage;
-import edu.java.bot.core.TrackList;
+import com.pengrad.telegrambot.request.SendMessage;
+import edu.java.bot.repository.InMemoryTrackRepository;
 import edu.java.bot.utils.LinkValidator;
 import edu.java.bot.utils.MessageUtils;
+import edu.java.bot.utils.UpdateUtils;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UntrackCommand implements Command {
 
-    private final TrackList list;
+    private final InMemoryTrackRepository list;
     private static final String DESCRIPTION =  " 'ссылка' - удаляет заданную ссылку из списка отслеживаемых\n";
     private static final String COMMAND = "/untrack";
 
-    public UntrackCommand(TrackList list) {
+    public UntrackCommand(InMemoryTrackRepository list) {
         this.list = list;
     }
 
@@ -29,34 +29,24 @@ public class UntrackCommand implements Command {
         return DESCRIPTION;
     }
 
-    public static String getCommandText() {
-        return COMMAND;
-    }
-
     @Override
-    public MySendMessage handle(Update update) {
+    public SendMessage handle(Update update) {
         String link = MessageUtils.getLink(update.message(), COMMAND);
         Long userID = MessageUtils.getUserId(update.message());
 
         if (list.getUsersWithLinks() == null || list.getUsersWithLinks().isEmpty()
             || !list.getUsersWithLinks().containsKey(userID)) {
-            return new MySendMessage(update.message().chat().id(), "Зарегестрируйтесь /start");
+            return new SendMessage(UpdateUtils.getChatId(update), "Зарегестрируйтесь /start");
         }
 
         if (LinkValidator.isValidLink(link)) {
             list.getUsersWithLinks().get(userID).remove(link);
-            return new MySendMessage(update.message().chat().id(), "Удалил ссылку " + link);
+            return new SendMessage(UpdateUtils.getChatId(update), "Удалил ссылку " + link);
         }
-        return new MySendMessage(update.message().chat().id(), "Некорректная ссылка" + " link");
+        return new SendMessage(UpdateUtils.getChatId(update), "Некорректная ссылка" + link);
     }
 
-    @Override
     public boolean supports(Update update) {
-        return Command.super.supports(update);
-    }
-
-    @Override
-    public BotCommand toApiCommand() {
-        return Command.super.toApiCommand();
+        return MessageUtils.getCommand(update.message()).equalsIgnoreCase(COMMAND);
     }
 }

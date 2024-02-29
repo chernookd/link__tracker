@@ -1,27 +1,23 @@
-package edu.java.bot.core.commands;
+package edu.java.bot.service.command;
 
-import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
-import edu.java.bot.core.MySendMessage;
-import edu.java.bot.core.TrackList;
+import com.pengrad.telegrambot.request.SendMessage;
+import edu.java.bot.repository.InMemoryTrackRepository;
 import edu.java.bot.utils.MessageUtils;
 import java.util.HashSet;
+import edu.java.bot.utils.UpdateUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 @Component
 public class StartCommand implements Command {
 
-    private final TrackList list;
+    private final InMemoryTrackRepository list;
     private static final String DESCRIPTION = "Регестрация пользователя\n";
     private static final String COMMAND = "/start";
 
-    public StartCommand(TrackList list) {
+    public StartCommand(InMemoryTrackRepository list) {
         this.list = list;
-    }
-
-    public static String getCommandText() {
-        return COMMAND;
     }
 
     @Override
@@ -35,7 +31,7 @@ public class StartCommand implements Command {
     }
 
     @Override
-    public MySendMessage handle(@NotNull Update update) {
+    public SendMessage handle(@NotNull Update update) {
         StringBuilder listCommandMessage = new StringBuilder();
         Long userID = MessageUtils.getUserId(update.message());
 
@@ -44,7 +40,7 @@ public class StartCommand implements Command {
 
             list.getUsersWithLinks().put(userID, new HashSet<>());
             listCommandMessage = new StringBuilder("Отслеживание началось");
-            return new MySendMessage(update.message().chat().id(), listCommandMessage.toString());
+            return new SendMessage(UpdateUtils.getChatId(update), listCommandMessage.toString());
         }
 
         if (list.getUsersWithLinks().containsKey(userID)) {
@@ -56,16 +52,10 @@ public class StartCommand implements Command {
             }
         }
 
-        return new MySendMessage(update.message().chat().id(), listCommandMessage.toString());
+        return new SendMessage(UpdateUtils.getChatId(update), listCommandMessage.toString());
     }
 
-    @Override
     public boolean supports(Update update) {
-        return Command.super.supports(update);
-    }
-
-    @Override
-    public BotCommand toApiCommand() {
-        return Command.super.toApiCommand();
+        return MessageUtils.getCommand(update.message()).equalsIgnoreCase(COMMAND);
     }
 }

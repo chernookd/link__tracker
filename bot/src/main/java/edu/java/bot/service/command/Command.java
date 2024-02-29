@@ -1,15 +1,15 @@
-package edu.java.bot.core.commands;
+package edu.java.bot.service.command;
 
 import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
-import edu.java.bot.core.MySendMessage;
+import com.pengrad.telegrambot.request.SendMessage;
 
 public interface Command {
     String command();
 
     String description();
 
-    MySendMessage handle(Update update);
+    SendMessage handle(Update update);
 
     default boolean supports(Update update) {
         return true;

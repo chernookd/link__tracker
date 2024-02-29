@@ -1,18 +1,18 @@
-package edu.java.bot.core;
+package edu.java.bot.repository;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import lombok.Data;
+import lombok.Getter;
 import org.springframework.stereotype.Repository;
 
-@Data
-@Repository
-public class TrackList {
+@Getter @Repository
+public class InMemoryTrackRepository {
 
     private Map<Long, Set<String>> usersWithLinks;
 
-    public TrackList() {
+    public InMemoryTrackRepository() {
         this.usersWithLinks = new HashMap<>();
     }
+
 }

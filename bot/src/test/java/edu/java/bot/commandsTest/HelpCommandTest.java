@@ -4,26 +4,17 @@ import com.pengrad.telegrambot.model.Chat;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
-import edu.java.bot.configuration.ApplicationConfig;
-import edu.java.bot.core.MySendMessage;
-import edu.java.bot.core.TrackList;
-import edu.java.bot.core.commands.Command;
-import edu.java.bot.core.commands.CommandBuilder;
-import edu.java.bot.core.commands.HelpCommand;
+import edu.java.bot.service.command.Command;
+import edu.java.bot.service.command.HelpCommand;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class HelpCommandTest {
 
-    private CommandBuilder commandBuilder;
     private HelpCommand helpCommand;
 
     @BeforeEach
@@ -39,10 +30,9 @@ public class HelpCommandTest {
         when(command3.command()).thenReturn("3");
         when(command3.description()).thenReturn("description3");
 
-        commandBuilder = mock(CommandBuilder.class);
-        when(commandBuilder.buldCommandsList()).thenReturn(Arrays.asList(command1, command2, command3));
+        Command[] commands = {command1, command2, command3};
 
-        helpCommand = new HelpCommand(commandBuilder);
+        helpCommand = new HelpCommand(commands);
     }
 
     @Test
@@ -56,11 +46,12 @@ public class HelpCommandTest {
         when(messageMock.chat()).thenReturn(chatMock);
         when(chatMock.id()).thenReturn(1L);
 
-        MySendMessage result = helpCommand.handle(updateMock);
+        SendMessage result = helpCommand.handle(updateMock);
 
         String expectedMessage = "1 - description1\n2 - description2\n3 - description3\n";
-        MySendMessage correct = new MySendMessage(1L, expectedMessage);
+        SendMessage correct = new SendMessage(1L, expectedMessage);
 
-        assertEquals(correct.message(), result.message());
+
+        assertTrue(correct.toWebhookResponse().equals(result.toWebhookResponse()));
     }
 }

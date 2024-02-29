@@ -1,9 +1,9 @@
-package edu.java.bot.core.commands;
+package edu.java.bot.service.command;
 
-import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
-import edu.java.bot.core.MySendMessage;
+import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.utils.MessageUtils;
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
@@ -11,14 +11,11 @@ import org.springframework.stereotype.Component;
 public class HelpCommand implements Command {
     private static final String COMMAND = "/help";
     private static final String DESCRIPTION = "Выводит список доступных команд";
-    private final CommandBuilder builder;
 
-    public HelpCommand(CommandBuilder commandBuilder) {
-        this.builder = commandBuilder;
-    }
+    private final Command[] commandsArr;
 
-    public static String getCommandText() {
-        return COMMAND;
+    public HelpCommand(Command[] commands) {
+        this.commandsArr = commands;
     }
 
     @Override
@@ -32,25 +29,20 @@ public class HelpCommand implements Command {
     }
 
     @Override
-    public MySendMessage handle(Update update) {
+    public SendMessage handle(Update update) {
         Long chatId = MessageUtils.getChatId(update.message());
         StringBuilder helpCommandMessage = new StringBuilder();
 
-        List<Command> commands = builder.buldCommandsList();
+        List<Command> commands = Arrays.stream(commandsArr).toList();
+
         for (Command command : commands) {
             helpCommandMessage.append(command.command()).append(" - ").append(command.description()).append("\n");
         }
 
-        return new MySendMessage(chatId, helpCommandMessage.toString());
+        return new SendMessage(chatId, helpCommandMessage.toString());
     }
 
-    @Override
     public boolean supports(Update update) {
-        return update.message().text().equals(COMMAND);
-    }
-
-    @Override
-    public BotCommand toApiCommand() {
-        return new BotCommand(command(), description());
+        return MessageUtils.getCommand(update.message()).equalsIgnoreCase(COMMAND);
     }
 }

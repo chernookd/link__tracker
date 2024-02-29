@@ -4,35 +4,33 @@ import com.pengrad.telegrambot.model.Chat;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.User;
-import edu.java.bot.configuration.ApplicationConfig;
-import edu.java.bot.core.MySendMessage;
-import edu.java.bot.core.TrackList;
-import edu.java.bot.core.commands.HelpCommand;
-import edu.java.bot.core.commands.ListCommand;
+import com.pengrad.telegrambot.request.SendMessage;
+import edu.java.bot.repository.InMemoryTrackRepository;
+import edu.java.bot.service.command.ListCommand;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class ListCommandTest {
 
-    private TrackList trackList;
+    private InMemoryTrackRepository trackList;
     private ListCommand listCommand;
 
     @BeforeEach
     public void setup() {
-        trackList = mock(TrackList.class);
+        trackList = mock(InMemoryTrackRepository.class);
         listCommand = new ListCommand(trackList);
     }
 
     @Test
     public void testHandleWithoutLinks() {
+        String correctAnswer = "Зарегестрируйтесь /start";
         Update updateMock = Mockito.mock(Update.class);
         Message messageMock = Mockito.mock(Message.class);
         Chat chatMock = Mockito.mock(Chat.class);
@@ -48,15 +46,16 @@ public class ListCommandTest {
         Map<Long, Set<String>> usersWithLinks = new HashMap<>();
         when(trackList.getUsersWithLinks()).thenReturn(usersWithLinks);
 
-        String correctAnswer = "Зарегестрируйтесь /start";
 
-        MySendMessage result = listCommand.handle(updateMock);
+        SendMessage result = listCommand.handle(updateMock);
+        SendMessage correct = new SendMessage(1L, correctAnswer);
 
-        assertEquals(correctAnswer.trim(), result.message().trim());
+        assertTrue(correct.toWebhookResponse().equals(result.toWebhookResponse()));
     }
 
     @Test
     public void testHandleWithLinks() {
+        String correctAnswer = "Ccылки :\nlink1\n";
         Update updateMock = Mockito.mock(Update.class);
         Message messageMock = Mockito.mock(Message.class);
         Chat chatMock = Mockito.mock(Chat.class);
@@ -73,10 +72,10 @@ public class ListCommandTest {
         usersWithLinks.put(1L, Set.of("link1"));
         when(trackList.getUsersWithLinks()).thenReturn(usersWithLinks);
 
-        String correctAnswer = "Ccылки :\nlink1";
 
-        MySendMessage result = listCommand.handle(updateMock);
+        SendMessage result = listCommand.handle(updateMock);
+        SendMessage correct = new SendMessage(1L, correctAnswer);
 
-        assertEquals(correctAnswer.trim(), result.message().trim());
+        assertTrue(correct.toWebhookResponse().equals(result.toWebhookResponse()));
     }
 }

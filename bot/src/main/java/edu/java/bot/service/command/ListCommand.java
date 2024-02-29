@@ -1,28 +1,24 @@
-package edu.java.bot.core.commands;
+package edu.java.bot.service.command;
 
-import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
-import edu.java.bot.core.MySendMessage;
-import edu.java.bot.core.TrackList;
+import com.pengrad.telegrambot.request.SendMessage;
+import edu.java.bot.repository.InMemoryTrackRepository;
 import edu.java.bot.utils.MessageUtils;
+import edu.java.bot.utils.UpdateUtils;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ListCommand implements Command {
 
-    private final TrackList list;
+    private final InMemoryTrackRepository list;
     private static final String DESCRIPTION = "Выводит список отслеживаемых ссылок\n";
     private static final String COMMAND = "/list";
     private static final String EMPTY_SET_MESSAGE = "Вы не остлеживаете ни одной ссылки";
 
 
 
-    public ListCommand(TrackList list) {
+    public ListCommand(InMemoryTrackRepository list) {
         this.list = list;
-    }
-
-    public static String getCommandText() {
-        return COMMAND;
     }
 
     @Override
@@ -36,14 +32,14 @@ public class ListCommand implements Command {
     }
 
     @Override
-    public MySendMessage handle(Update update) {
+    public SendMessage handle(Update update) {
         Long userID = MessageUtils.getUserId(update.message());
         StringBuilder listCommandMessage = new StringBuilder("Ccылки :\n");
         int linksNum = 0;
 
         if (list.getUsersWithLinks() == null || list.getUsersWithLinks().isEmpty()
             || !list.getUsersWithLinks().containsKey(userID)) {
-            return new MySendMessage(update.message().chat().id(), "Зарегестрируйтесь /start");
+            return new SendMessage(UpdateUtils.getChatId(update), "Зарегестрируйтесь /start");
         }
 
         for (String link : list.getUsersWithLinks().get(userID)) {
@@ -54,16 +50,11 @@ public class ListCommand implements Command {
             listCommandMessage = new StringBuilder(EMPTY_SET_MESSAGE);
         }
 
-        return new MySendMessage(update.message().chat().id(), listCommandMessage.toString());
+        return new SendMessage(UpdateUtils.getChatId(update), listCommandMessage.toString());
     }
 
-    @Override
     public boolean supports(Update update) {
-        return Command.super.supports(update);
+        return MessageUtils.getCommand(update.message()).equalsIgnoreCase(COMMAND);
     }
 
-    @Override
-    public BotCommand toApiCommand() {
-        return Command.super.toApiCommand();
-    }
 }

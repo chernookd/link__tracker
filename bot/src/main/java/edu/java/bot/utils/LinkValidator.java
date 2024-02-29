@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 @UtilityClass
 public class LinkValidator {
 
-    public static boolean isValidLink(String linkStr) {
+    public boolean isValidLink(String linkStr) {
         HttpURLConnection connection = null;
         try {
             URL url = new URL(linkStr);

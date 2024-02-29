@@ -7,7 +7,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class UtilsTest {
+public class LinkValidatorTest {
 
     static Stream<Arguments> source() {
         return Stream.of(
