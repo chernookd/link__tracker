@@ -13,7 +13,7 @@ public class ClientConfiguration {
 
     @Bean
     public WebClient gitHubWebClient() {
-        String gitHubBaseUrl = applicationConfig.urls().gitHubBaseUrl();
+        String gitHubBaseUrl = applicationConfig.url().gitHubBaseUrl();
 
         WebClient webClient = WebClient.builder()
             .baseUrl(gitHubBaseUrl)
@@ -23,7 +23,7 @@ public class ClientConfiguration {
 
     @Bean
     public WebClient stackOverflowWebClient() {
-        String stackOverFlowBaseUrl = applicationConfig.urls().gitHubBaseUrl();
+        String stackOverFlowBaseUrl = applicationConfig.url().gitHubBaseUrl();
 
         WebClient webClient = WebClient
             .builder()

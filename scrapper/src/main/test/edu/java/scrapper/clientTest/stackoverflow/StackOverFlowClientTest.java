@@ -1,6 +1,5 @@
-package edu.java.scrapper.client.stackoverflow;
+package edu.java.scrapper.clientTest.stackoverflow;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import edu.java.clients.stackoverflow.StackoverflowClientImpl;

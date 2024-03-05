@@ -12,7 +12,7 @@ public record ApplicationConfig(
     @NotNull
     @Bean
     Scheduler scheduler,
-    BaseUrls urls
+    BaseUrls url
 ) {
     public record Scheduler(boolean enable, @NotNull Duration interval, @NotNull Duration delay) {
     }

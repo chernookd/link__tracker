@@ -4,7 +4,7 @@ app:
     interval: 10s
     delay: 10s
 
-  urls:
+  url:
     gitHubBaseUrl: https://api.github.com/repos/
     stackOverflowBaseUrl: https://api.stackexchange.com/2.3/questions/
 
