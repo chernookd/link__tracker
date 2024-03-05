@@ -1,4 +1,4 @@
-package edu.java.bot.service.test;
+package edu.java.bot.serviceTest;
 
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;

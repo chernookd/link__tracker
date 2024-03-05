@@ -41,8 +41,4 @@ public class HelpCommand implements Command {
 
         return new SendMessage(chatId, helpCommandMessage.toString());
     }
-
-    public boolean supports(Update update) {
-        return MessageUtils.getCommand(update.message()).equalsIgnoreCase(COMMAND);
-    }
 }

@@ -35,27 +35,23 @@ public class StartCommand implements Command {
         StringBuilder listCommandMessage = new StringBuilder();
         Long userID = MessageUtils.getUserId(update.message());
 
-        if (list.getUsersWithLinks() == null || list.getUsersWithLinks().isEmpty()
-            || !list.getUsersWithLinks().containsKey(userID)) {
+        if (list.checkingForEmptiness()
+            || !list.containsKey(userID)) {
 
-            list.getUsersWithLinks().put(userID, new HashSet<>());
+            list.putTrackSet(userID, new HashSet<>());
             listCommandMessage = new StringBuilder("Отслеживание началось");
             return new SendMessage(UpdateUtils.getChatId(update), listCommandMessage.toString());
         }
 
-        if (list.getUsersWithLinks().containsKey(userID)) {
+        if (list.containsKey(userID)) {
             listCommandMessage = new StringBuilder("Аккаунт найден\n");
             listCommandMessage.append("Прошлые ссылки : \n");
 
-            for (String link : list.getUsersWithLinks().get(userID)) {
+            for (String link : list.getByUserId(userID)) {
                 listCommandMessage.append(link).append("\n");
             }
         }
 
         return new SendMessage(UpdateUtils.getChatId(update), listCommandMessage.toString());
-    }
-
-    public boolean supports(Update update) {
-        return MessageUtils.getCommand(update.message()).equalsIgnoreCase(COMMAND);
     }
 }

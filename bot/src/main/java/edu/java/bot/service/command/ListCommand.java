@@ -37,12 +37,11 @@ public class ListCommand implements Command {
         StringBuilder listCommandMessage = new StringBuilder("Ccылки :\n");
         int linksNum = 0;
 
-        if (list.getUsersWithLinks() == null || list.getUsersWithLinks().isEmpty()
-            || !list.getUsersWithLinks().containsKey(userID)) {
+        if (list.checkingForEmptiness() || !list.containsKey(userID)) {
             return new SendMessage(UpdateUtils.getChatId(update), "Зарегестрируйтесь /start");
         }
 
-        for (String link : list.getUsersWithLinks().get(userID)) {
+        for (String link : list.getByUserId(userID)) {
             listCommandMessage.append(link).append("\n");
             linksNum += 1;
         }
@@ -52,9 +51,4 @@ public class ListCommand implements Command {
 
         return new SendMessage(UpdateUtils.getChatId(update), listCommandMessage.toString());
     }
-
-    public boolean supports(Update update) {
-        return MessageUtils.getCommand(update.message()).equalsIgnoreCase(COMMAND);
-    }
-
 }

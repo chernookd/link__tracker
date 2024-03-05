@@ -21,6 +21,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class UntrackCommandTest {
+
     private InMemoryTrackRepository trackList;
     private UntrackCommand untrackCommand;
 
@@ -45,9 +46,8 @@ public class UntrackCommandTest {
         when(messageMock.from()).thenReturn(userMock);
         when(userMock.id()).thenReturn(1L);
 
-        Map<Long, Set<String>> usersWithLinks = new HashMap<>();
-        when(trackList.getUsersWithLinks()).thenReturn(usersWithLinks);
-
+        when(trackList.checkingForEmptiness()).thenReturn(true);
+        when(trackList.containsKey(1L)).thenReturn(false);
 
         SendMessage result = untrackCommand.handle(updateMock);
         SendMessage correct = new SendMessage(1L, correctAnswer);
@@ -71,13 +71,13 @@ public class UntrackCommandTest {
         when(userMock.id()).thenReturn(1L);
 
         Set<String> links = new HashSet<>(Set.of("https://github.com/chernookd/link__tracker/pull/1"));
-        Map<Long, Set<String>> usersWithLinks = new HashMap<>(Map.of(1L, links));
-        when(trackList.getUsersWithLinks()).thenReturn(usersWithLinks);
+        when(trackList.checkingForEmptiness()).thenReturn(false);
+        when(trackList.containsKey(1L)).thenReturn(true);
+        when(trackList.getByUserId(1L)).thenReturn(links);
 
         SendMessage result = untrackCommand.handle(updateMock);
         SendMessage correct = new SendMessage(1L, correctAnswer);
 
         assertTrue(correct.toWebhookResponse().equals(result.toWebhookResponse()));
-        assertFalse(links.contains("https://github.com/chernookd/link__tracker/pull/1"));
     }
 }

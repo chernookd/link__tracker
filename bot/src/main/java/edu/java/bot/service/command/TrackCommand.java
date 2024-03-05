@@ -33,17 +33,13 @@ public class TrackCommand implements Command {
         String link = MessageUtils.getLink(update.message(), COMMAND);
         Long userID = MessageUtils.getUserId(update.message());
 
-        if (list.getUsersWithLinks() == null || list.getUsersWithLinks().isEmpty()
-            || !list.getUsersWithLinks().containsKey(userID)) {
+        if (list.checkingForEmptiness()
+            || !list.containsKey(userID)) {
             return new SendMessage(UpdateUtils.getChatId(update), "Зарегестрируйтесь /start");
         } else if (LinkValidator.isValidLink(link)) {
-            list.getUsersWithLinks().get(userID).add(link);
+            list.put(userID, link);
             return new SendMessage(UpdateUtils.getChatId(update), "Начал отслеживание ссылки: " + link);
         }
         return new SendMessage(UpdateUtils.getChatId(update), "Некорректная ссылка " + link);
-    }
-
-    public boolean supports(Update update) {
-        return MessageUtils.getCommand(update.message()).equalsIgnoreCase(COMMAND);
     }
 }

@@ -1,4 +1,4 @@
-package edu.java.bot.utils.test;
+package edu.java.bot.utilsTest;
 
 import edu.java.bot.utils.LinkValidator;
 import org.junit.jupiter.params.ParameterizedTest;

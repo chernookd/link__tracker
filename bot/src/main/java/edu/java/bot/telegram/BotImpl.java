@@ -1,4 +1,4 @@
-package edu.java.bot.service;
+package edu.java.bot.telegram;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
@@ -9,8 +9,8 @@ import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SetMyCommands;
 import com.pengrad.telegrambot.response.BaseResponse;
 import edu.java.bot.configuration.ApplicationConfig;
+import edu.java.bot.service.UserMessageProcessorImpl;
 import edu.java.bot.service.command.Command;
-import edu.java.bot.utils.UpdateUtils;
 import jakarta.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.List;
@@ -22,8 +22,7 @@ public class BotImpl implements Bot {
     private final TelegramBot bot;
     private final Command[] commands;
     private final UserMessageProcessorImpl userMessageProcessor;
-    private static final String ERROR_TEXT_MESSAGE = "ERROR";
-
+    private final static String ERROR_TEXT_MESSAGE = "ERROR";
 
     public BotImpl(ApplicationConfig applicationConfig, Command[] commands,
         UserMessageProcessorImpl userMessageProcessor) {
@@ -64,22 +63,10 @@ public class BotImpl implements Bot {
 
     @Override
     public int process(List<Update> updates) {
-
         for (Update update : updates) {
-            if (UpdateUtils.isValidUpdate(update)) {
-                Command command = userMessageProcessor.process(update);
-                SendMessage sendMessage;
-
-                if (command != null) {
-                    sendMessage = command.handle(update);
-                } else {
-                    sendMessage = new SendMessage(UpdateUtils.getChatId(update), ERROR_TEXT_MESSAGE);
-                }
-                bot.execute(sendMessage);
-
-            }
+            SendMessage sendMessage = userMessageProcessor.processUpdate(update);
+            bot.execute(sendMessage);
         }
-
         return 0;
     }
 

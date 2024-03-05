@@ -8,6 +8,7 @@ import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.User;
 
+import edu.java.bot.utils.UpdateUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -17,7 +18,9 @@ import java.util.Map;
 import java.util.Set;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 public class TrackCommandTest {
@@ -47,7 +50,6 @@ public class TrackCommandTest {
         when(userMock.id()).thenReturn(1L);
 
         Map<Long, Set<String>> usersWithLinks = new HashMap<>();
-        when(trackList.getUsersWithLinks()).thenReturn(usersWithLinks);
 
 
         SendMessage result = trackCommand.handle(updateMock);
@@ -71,10 +73,8 @@ public class TrackCommandTest {
         when(messageMock.from()).thenReturn(userMock);
         when(userMock.id()).thenReturn(1L);
 
-        Map<Long, Set<String>> usersWithLinks = new HashMap<>();
-        usersWithLinks.put(1L, new HashSet<>());
-        when(trackList.getUsersWithLinks()).thenReturn(usersWithLinks);
-
+        when(trackList.checkingForEmptiness()).thenReturn(false);
+        when(trackList.containsKey(1L)).thenReturn(true);
 
         SendMessage result = trackCommand.handle(updateMock);
         SendMessage correct = new SendMessage(1L, correctAnswer);
@@ -82,3 +82,4 @@ public class TrackCommandTest {
         assertTrue(correct.toWebhookResponse().equals(result.toWebhookResponse()));
     }
 }
+

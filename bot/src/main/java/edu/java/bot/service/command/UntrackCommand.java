@@ -34,19 +34,15 @@ public class UntrackCommand implements Command {
         String link = MessageUtils.getLink(update.message(), COMMAND);
         Long userID = MessageUtils.getUserId(update.message());
 
-        if (list.getUsersWithLinks() == null || list.getUsersWithLinks().isEmpty()
-            || !list.getUsersWithLinks().containsKey(userID)) {
+        if (list.checkingForEmptiness()
+            || !list.containsKey(userID)) {
             return new SendMessage(UpdateUtils.getChatId(update), "Зарегестрируйтесь /start");
         }
 
         if (LinkValidator.isValidLink(link)) {
-            list.getUsersWithLinks().get(userID).remove(link);
+            list.remove(userID, link);
             return new SendMessage(UpdateUtils.getChatId(update), "Удалил ссылку " + link);
         }
         return new SendMessage(UpdateUtils.getChatId(update), "Некорректная ссылка" + link);
-    }
-
-    public boolean supports(Update update) {
-        return MessageUtils.getCommand(update.message()).equalsIgnoreCase(COMMAND);
     }
 }

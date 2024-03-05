@@ -1,4 +1,4 @@
-package edu.java.bot.utils.test;
+package edu.java.bot.utilsTest;
 
 import com.pengrad.telegrambot.model.Chat;
 import com.pengrad.telegrambot.model.Message;

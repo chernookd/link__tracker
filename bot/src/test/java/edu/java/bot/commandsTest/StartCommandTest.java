@@ -45,7 +45,9 @@ public class StartCommandTest {
         when(userMock.id()).thenReturn(1L);
 
         Map<Long, Set<String>> usersWithLinks = new HashMap<>();
-        when(trackList.getUsersWithLinks()).thenReturn(usersWithLinks);
+        when(trackList.checkingForEmptiness()).thenReturn(true);
+        when(trackList.containsKey(1L)).thenReturn(true);
+
 
 
         SendMessage result = startCommand.handle(updateMock);
@@ -71,7 +73,9 @@ public class StartCommandTest {
 
         Map<Long, Set<String>> usersWithLinks = new HashMap<>();
         usersWithLinks.put(1L, Set.of("link1"));
-        when(trackList.getUsersWithLinks()).thenReturn(usersWithLinks);
+        when(trackList.checkingForEmptiness()).thenReturn(false);
+        when(trackList.containsKey(1L)).thenReturn(true);
+        when(trackList.getByUserId(1L)).thenReturn(usersWithLinks.get(1L));
 
         SendMessage result = startCommand.handle(updateMock);
         SendMessage correct = new SendMessage(1L, correctAnswer);
