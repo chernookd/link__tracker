@@ -23,7 +23,7 @@ public class ClientConfiguration {
 
     @Bean
     public WebClient stackOverflowWebClient() {
-        String stackOverFlowBaseUrl = applicationConfig.url().gitHubBaseUrl();
+        String stackOverFlowBaseUrl = applicationConfig.url().stackOverflowBaseUrl();
 
         WebClient webClient = WebClient
             .builder()

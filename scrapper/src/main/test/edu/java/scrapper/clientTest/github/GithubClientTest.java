@@ -1,5 +1,6 @@
 package edu.java.scrapper.clientTest.github;
 
+
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import edu.java.clients.github.GithubClientImpl;
@@ -13,8 +14,8 @@ import java.time.OffsetDateTime;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
 
 @WireMockTest(httpPort = 8080)
 @ExtendWith(WireMockExtension.class)

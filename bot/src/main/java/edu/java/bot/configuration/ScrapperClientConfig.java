@@ -13,7 +13,7 @@ public class ScrapperClientConfig {
 
     @Bean
     public WebClient scrapperWebClient() {
-        String botBaseUrl = applicationConfig.urls().scrapperBaseUrl();
+        String botBaseUrl = applicationConfig.url().scrapperBaseUrl();
 
         WebClient webClient = WebClient.builder()
             .baseUrl(botBaseUrl)

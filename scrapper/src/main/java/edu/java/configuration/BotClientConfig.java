@@ -13,7 +13,7 @@ public class BotClientConfig {
 
     @Bean
     public WebClient botWebClient() {
-        String botBaseUrl = applicationConfig.urls().botBaseUrl();
+        String botBaseUrl = applicationConfig.url().botBaseUrl();
 
         WebClient webClient = WebClient.builder()
             .baseUrl(botBaseUrl)
