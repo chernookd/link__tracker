@@ -2,7 +2,9 @@ app:
   scheduler:
     enable: true
     interval: 10s
+<<<<<<<<< Temporary merge branch 1
     delay: 10s
+
   url:
     gitHubBaseUrl: https://api.github.com/repos/
     stackOverflowBaseUrl: https://api.stackexchange.com/2.3/questions/
