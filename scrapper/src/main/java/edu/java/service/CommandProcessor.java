@@ -1,4 +1,4 @@
-package edu.java.controller;
+package edu.java.service;
 
 import edu.java.controller.dto.AddLinkRequest;
 import edu.java.controller.dto.LinkResponse;

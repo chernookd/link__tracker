@@ -8,11 +8,9 @@ import java.net.URI;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class LinkUpdateRequest {
     private @NotNull @Positive Long id;
     private @NotNull URI url;

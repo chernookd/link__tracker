@@ -1,4 +1,4 @@
-package edu.java.bot.controller;
+package edu.java.bot.service;
 
 import edu.java.bot.controller.dto.LinkUpdateRequest;
 import lombok.extern.slf4j.Slf4j;

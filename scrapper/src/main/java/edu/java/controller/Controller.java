@@ -4,6 +4,7 @@ import edu.java.controller.dto.AddLinkRequest;
 import edu.java.controller.dto.LinkResponse;
 import edu.java.controller.dto.ListLinksResponse;
 import edu.java.controller.dto.RemoveLinkRequest;
+import edu.java.service.CommandProcessor;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
@@ -23,17 +24,13 @@ public class Controller {
     private final CommandProcessor commandProcessor;
 
     @PostMapping(value = "/{id}", produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> addChat(@PathVariable @Positive @Valid Long id) {
+    public void addChat(@PathVariable @Positive @Valid Long id) {
         commandProcessor.addChat(id);
-
-        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping(value = "/{id}", produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> deleteChat(@PathVariable @Positive @Valid Long id) {
+    public void deleteChat(@PathVariable @Positive @Valid Long id) {
         commandProcessor.deleteChat(id);
-
-        return ResponseEntity.ok().build();
     }
 
     @GetMapping(value = "/links", produces = APPLICATION_JSON_VALUE)
