@@ -16,3 +16,4 @@ public record ApplicationConfig(
     public record Urls(@NotNull String scrapperBaseUrl) {
     }
 }
+

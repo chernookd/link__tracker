@@ -1,5 +1,6 @@
+
 app:
-  telegram-token: unset
+  telegram-token: ${token}
   urls:
     scrapperBaseUrl: http://localhost:8080
 
