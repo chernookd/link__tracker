@@ -10,6 +10,7 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties(prefix = "app", ignoreUnknownFields = false)
 public record ApplicationConfig(
     @NotNull
+
     @Bean
     Scheduler scheduler,
     BaseUrls url
@@ -19,4 +20,9 @@ public record ApplicationConfig(
 
     public record BaseUrls(String gitHubBaseUrl, String stackOverflowBaseUrl) {
     }
+
+    public record Urls(@NotNull String botBaseUrl) {
+    }
 }
+
+

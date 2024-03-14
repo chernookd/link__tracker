@@ -1,5 +1,4 @@
-app:
-  scheduler:
+scheduler:
     enable: true
     interval: 10s
     delay: 10s
@@ -7,6 +6,7 @@ app:
   url:
     gitHubBaseUrl: https://api.github.com/repos/
     stackOverflowBaseUrl: https://api.stackexchange.com/2.3/questions/
+
 
 spring:
   application:
@@ -17,3 +17,7 @@ server:
 
 logging:
   config: classpath:log4j2-plain.xml
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui
