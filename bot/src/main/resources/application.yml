@@ -1,7 +1,5 @@
 app:
   telegram-token: unset
-  urls:
-    scrapperBaseUrl: http://localhost:8080
 
 spring:
   application:
