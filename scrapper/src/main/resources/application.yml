@@ -2,7 +2,6 @@ app:
   scheduler:
     enable: true
     interval: 10s
-<<<<<<<<< Temporary merge branch 1
     delay: 10s
 
   url:
@@ -23,3 +22,9 @@ logging:
 springdoc:
   swagger-ui:
     path: /swagger-ui
+
+data-source:
+  url: jdbc:postgresql://localhost:5432/scrapper
+  username: postgres
+  password: postgres
+

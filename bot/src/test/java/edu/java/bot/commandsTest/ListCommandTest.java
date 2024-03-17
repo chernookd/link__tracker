@@ -5,32 +5,37 @@ import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.User;
 import com.pengrad.telegrambot.request.SendMessage;
-import edu.java.bot.repository.InMemoryTrackRepository;
+import edu.java.bot.scrapperClient.dto.LinkResponse;
+import edu.java.bot.scrapperClient.dto.ListLinksResponse;
 import edu.java.bot.service.command.ListCommand;
+import edu.java.bot.service.scrapperClientService.ScrapperClientService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import java.net.URI;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 public class ListCommandTest {
 
-    private InMemoryTrackRepository trackList;
     private ListCommand listCommand;
+    private ScrapperClientService scrapperClientService;
 
     @BeforeEach
     public void setup() {
-        trackList = mock(InMemoryTrackRepository.class);
-        listCommand = new ListCommand(trackList);
+        scrapperClientService = Mockito.mock(ScrapperClientService.class);
+        listCommand = new ListCommand(scrapperClientService);
     }
 
     @Test
     public void testHandleWithoutLinks() {
-        String correctAnswer = "Зарегестрируйтесь /start";
+        String correctAnswer = "Ccылки :\n";
         Update updateMock = Mockito.mock(Update.class);
         Message messageMock = Mockito.mock(Message.class);
         Chat chatMock = Mockito.mock(Chat.class);
@@ -43,18 +48,17 @@ public class ListCommandTest {
         when(messageMock.from()).thenReturn(userMock);
         when(userMock.id()).thenReturn(1L);
 
-        Map<Long, Set<String>> usersWithLinks = new HashMap<>();
-        when(trackList.checkingForEmptiness()).thenReturn(true);
+        when(scrapperClientService.getLinks(1L)).thenReturn(new ListLinksResponse(Collections.emptyList(), 0));
 
         SendMessage result = listCommand.handle(updateMock);
         SendMessage correct = new SendMessage(1L, correctAnswer);
 
-        assertTrue(correct.toWebhookResponse().equals(result.toWebhookResponse()));
+        assertEquals(correct.toWebhookResponse(), result.toWebhookResponse());
     }
 
     @Test
     public void testHandleWithLinks() {
-        String correctAnswer = "Ccылки :\nlink1\n";
+        String correctAnswer = "Ccылки :\nhttps://www.baeldung.com/spring-dirtiescontext\n";
         Update updateMock = Mockito.mock(Update.class);
         Message messageMock = Mockito.mock(Message.class);
         Chat chatMock = Mockito.mock(Chat.class);
@@ -67,13 +71,15 @@ public class ListCommandTest {
         when(messageMock.from()).thenReturn(userMock);
         when(userMock.id()).thenReturn(1L);
 
-        when(trackList.checkingForEmptiness()).thenReturn(false);
-        when(trackList.containsKey(1L)).thenReturn(true);
-        when(trackList.getByUserId(1L)).thenReturn(Set.of("link1"));
+        LinkResponse linkResponse = new LinkResponse(1L, URI.create("https://www.baeldung.com/spring-dirtiescontext"));
+        linkResponse.setUrl(URI.create("https://www.baeldung.com/spring-dirtiescontext"));
+        ListLinksResponse listLinksResponse = new ListLinksResponse(List.of(linkResponse), 1);
+
+        when(scrapperClientService.getLinks(1L)).thenReturn(listLinksResponse);
 
         SendMessage result = listCommand.handle(updateMock);
         SendMessage correct = new SendMessage(1L, correctAnswer);
 
-        assertTrue(correct.toWebhookResponse().equals(result.toWebhookResponse()));
+        assertEquals(correct.toWebhookResponse(), result.toWebhookResponse());
     }
 }

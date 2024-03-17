@@ -32,6 +32,10 @@ public abstract class IntegrationTest {
     private static void runMigrations(JdbcDatabaseContainer<?> c) {
         SingleConnectionDataSource dataSource = new SingleConnectionDataSource();
         dataSource.setSuppressClose(true);
+        System.out.println(c.getJdbcUrl());
+        System.out.println(c.getUsername());
+        System.out.println(c.getPassword());
+
         dataSource.setUrl(c.getJdbcUrl());
         dataSource.setUsername(c.getUsername());
         dataSource.setPassword(c.getPassword());

@@ -1,6 +1,7 @@
 package edu.java.bot.utils;
 
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import lombok.experimental.UtilityClass;
 import org.springframework.http.HttpStatus;
@@ -8,7 +9,7 @@ import org.springframework.http.HttpStatus;
 @UtilityClass
 public class LinkValidator {
 
-    public boolean isValidLink(String linkStr) {
+    public URI isValidLink(String linkStr) {
         HttpURLConnection connection = null;
         try {
             URL url = new URL(linkStr);
@@ -18,9 +19,9 @@ public class LinkValidator {
             int code = connection.getResponseCode();
             HttpStatus httpStatus = HttpStatus.resolve(code);
 
-            return httpStatus != null && httpStatus.is2xxSuccessful();
+            return url.toURI();
         } catch (Exception e) {
-            return false;
+            return null;
         } finally {
             if (connection != null) {
                 connection.disconnect();

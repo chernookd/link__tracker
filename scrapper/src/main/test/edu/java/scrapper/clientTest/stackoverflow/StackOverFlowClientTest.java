@@ -27,6 +27,7 @@ public class StackOverFlowClientTest {
     private StackoverflowClientImpl stackOverflowClient;
     private StackoverflowItemOwner correctOwner;
     private OffsetDateTime expectedCreationDate;
+    private OffsetDateTime lastUpdate;
     private List<StackoverflowItem> correctItemsList;
 
     static final String BASE_URL = "http://localhost:8080/2.3/questions/";
@@ -82,6 +83,7 @@ public class StackOverFlowClientTest {
         correctOwner = new StackoverflowItemOwner(30245120,
             1, 23178971, "chandan gowda");
         expectedCreationDate = Instant.ofEpochSecond(1708785746).atOffset(ZoneOffset.UTC);
+        lastUpdate = Instant.ofEpochSecond(1708785746).atOffset(ZoneOffset.UTC);
         correctItemsList = List.of(
             new StackoverflowItem(
                 correctOwner,
@@ -90,7 +92,8 @@ public class StackOverFlowClientTest {
                 ANSWER_COUNT,
                 SCORE,
                 expectedCreationDate,
-                ID
+                ID,
+                lastUpdate
             )
         );
         stubFor(
