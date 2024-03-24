@@ -1,6 +1,6 @@
 package edu.java.service;
 
-import edu.java.service.serviceDao.LinkUpdater;
+import edu.java.service.update.LinkUpdater;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.scheduling.annotation.Scheduled;

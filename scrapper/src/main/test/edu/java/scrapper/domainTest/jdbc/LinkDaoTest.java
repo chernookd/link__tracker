@@ -1,7 +1,7 @@
-package edu.java.scrapper.domainTest;
+package edu.java.scrapper.domainTest.jdbc;
 
 
-import edu.java.domain.dao.LinkDao;
+import edu.java.domain.jdbc.LinkDaoJdbc;
 import edu.java.scrapper.IntegrationTest;
 import org.junit.jupiter.api.AfterEach;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -17,7 +17,7 @@ import java.net.URI;
 import java.time.OffsetDateTime;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@SpringBootTest(classes = {LinkDao.class})
+@SpringBootTest(classes = {LinkDaoJdbc.class})
 @EnableAutoConfiguration(exclude = LiquibaseAutoConfiguration.class)
 @Transactional
 @Rollback
@@ -25,7 +25,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 public class LinkDaoTest extends IntegrationTest {
 
     @Autowired
-    private LinkDao linkDao;
+    private LinkDaoJdbc linkDao;
 
     @Test
     @Transactional

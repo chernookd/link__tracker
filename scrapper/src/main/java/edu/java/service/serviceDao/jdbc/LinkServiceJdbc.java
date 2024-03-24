@@ -2,64 +2,62 @@ package edu.java.service.serviceDao.jdbc;
 
 import edu.java.controller.exception.DeleteLinkException;
 import edu.java.controller.exception.FindLinkException;
-import edu.java.domain.dao.ChatDao;
-import edu.java.domain.dao.ChatLinkDao;
-import edu.java.domain.dao.LinkDao;
 import edu.java.domain.dto.Chat;
 import edu.java.domain.dto.Link;
+import edu.java.domain.jdbc.ChatDaoJdbc;
+import edu.java.domain.jdbc.ChatLinkDaoJdbc;
+import edu.java.domain.jdbc.LinkDaoJdbc;
 import edu.java.service.serviceDao.LinkService;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
-@Service
 @RequiredArgsConstructor
 public class LinkServiceJdbc implements LinkService {
 
-    private final LinkDao linkDao;
-    private final ChatDao chatDao;
-    private final ChatLinkDao chatLinkDao;
+    private final LinkDaoJdbc linkDao;
+    private final ChatDaoJdbc chatDaoJdbc;
+    private final ChatLinkDaoJdbc chatLinkDaoJdbc;
 
     @Override
     public Link add(long tgChatId, URI url) {
-        Chat chat = chatDao.findById(tgChatId).getFirst();
+        Chat chat = chatDaoJdbc.findById(tgChatId).getFirst();
         if (chat == null) {
-            chatDao.add(tgChatId);
+            chatDaoJdbc.add(tgChatId);
         }
 
         linkDao.add(url);
         Link link = linkDao.findByUri(url);
         long linkId = link.getId();
-        chatLinkDao.add(tgChatId, linkId);
+        chatLinkDaoJdbc.add(tgChatId, linkId);
 
         return link;
     }
 
     @Override
     public Link remove(long tgChatId, URI url) throws DeleteLinkException {
-        Chat chat = chatDao.findById(tgChatId).getFirst();
+        Chat chat = chatDaoJdbc.findById(tgChatId).getFirst();
         Link link = linkDao.findByUri(url);
         if (chat == null || link == null) {
             throw new DeleteLinkException();
         }
 
         linkDao.remove(url);
-        chatLinkDao.remove(chat.getId(), link.getId());
+        chatLinkDaoJdbc.remove(chat.getId(), link.getId());
 
         return link;
     }
 
     @Override
     public Collection<Link> listAll(long tgChatId) throws FindLinkException {
-        List<Chat> chatList = chatDao.findById(tgChatId);
+        List<Chat> chatList = chatDaoJdbc.findById(tgChatId);
         if (chatList == null || chatList.isEmpty()) {
             throw new FindLinkException();
         }
         Chat chat = chatList.getFirst();
 
-        List<Link> linkList = chatLinkDao.findAllLinks(tgChatId);
+        List<Link> linkList = chatLinkDaoJdbc.findAllLinks(tgChatId);
         if (linkList == null) {
             throw new FindLinkException();
         }
