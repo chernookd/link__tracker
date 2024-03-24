@@ -13,11 +13,18 @@ public record ApplicationConfig(
 
     @Bean
     Scheduler scheduler,
-    BaseUrls url
+    BaseUrls url,
+    @NotNull
+    AccessType databaseAccessType
 ) {
     public record Scheduler(boolean enable, @NotNull Duration interval, @NotNull Duration delay) {
     }
 
     public record BaseUrls(String gitHubBaseUrl, String stackOverflowBaseUrl, String botBaseUrl) {
+    }
+
+    public enum AccessType {
+        JDBC,
+        JPA
     }
 }

@@ -29,4 +29,7 @@ public class StackoverflowItem {
     @JsonProperty("question_id")
     private long questionId;
 
+    @JsonProperty("last_activity_date")
+    private OffsetDateTime lastEditDate;
+
 }

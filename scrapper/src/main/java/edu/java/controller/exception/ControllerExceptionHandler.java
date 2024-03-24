@@ -4,23 +4,11 @@ import edu.java.controller.dto.ApiErrorResponse;
 import java.util.Arrays;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice(basePackages = "edu/java/controller")
+@ControllerAdvice(annotations = CustomExceptionHandler.class)
 public class ControllerExceptionHandler {
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiErrorResponse> handle(Exception e) {
-        return ResponseEntity.badRequest()
-            .body(new ApiErrorResponse(
-                "Invalid request",
-                String.valueOf(HttpStatus.BAD_REQUEST.value()),
-                e.getClass().getSimpleName(),
-                e.getMessage(),
-                Arrays.stream(e.getStackTrace()).map(StackTraceElement::toString).toList()));
-    }
-
 
     @ExceptionHandler({AddChatException.class})
     public ResponseEntity<ApiErrorResponse> handleAddChatException(AddChatException e) {
@@ -59,6 +47,18 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler({DeleteLinkException.class})
     public ResponseEntity<ApiErrorResponse> handleDeleteLinkException(DeleteLinkException e) {
+
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
+            .body(new ApiErrorResponse(
+                e.getMessage(),
+                String.valueOf(HttpStatus.NOT_ACCEPTABLE.value()),
+                e.getClass().getSimpleName(),
+                e.getMessage(),
+                Arrays.stream(e.getStackTrace()).map(StackTraceElement::toString).toList()));
+    }
+
+    @ExceptionHandler({FindLinkException.class})
+    public ResponseEntity<ApiErrorResponse> handleFindLinkException(FindLinkException e) {
 
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
             .body(new ApiErrorResponse(

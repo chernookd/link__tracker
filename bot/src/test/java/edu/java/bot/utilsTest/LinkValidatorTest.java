@@ -4,6 +4,7 @@ import edu.java.bot.utils.LinkValidator;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import java.net.URI;
 import java.util.stream.Stream;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -23,7 +24,12 @@ public class LinkValidatorTest {
     @MethodSource("source")
     @ParameterizedTest
     void linkValidationTest(String linkStr, Boolean correctAnswer) {
-        Boolean currentAnswer = LinkValidator.isValidLink(linkStr);
-        assertThat(currentAnswer.equals(correctAnswer)).isTrue();
+        URI currentAnswer = LinkValidator.isValidLink(linkStr);
+        if (correctAnswer) {
+            assertThat(currentAnswer).isNotNull();
+        } else {
+            assertThat(currentAnswer).isEqualTo(null);
+
+        }
     }
 }

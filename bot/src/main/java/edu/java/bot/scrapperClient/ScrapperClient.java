@@ -51,12 +51,22 @@ public class ScrapperClient {
             .bodyToMono(Void.class);
     }
 
-    public Mono<ListLinksResponse> getAllTrackingLinks() {
-    return scrapperWebClient.get()
-        .uri("/links")
-        .retrieve()
-        .bodyToMono(ListLinksResponse.class);
+    public Mono<ListLinksResponse> getAllTrackingLinks(Long id) {
+        return scrapperWebClient.get()
+            .uri(uriBuilder -> uriBuilder.path("/links").queryParam("id", id).build())
+            .retrieve()
+            .onStatus(HttpStatus.BAD_REQUEST::equals, response ->
+                response.bodyToMono(ApiErrorResponse.class)
+                    .flatMap(error -> Mono.error(new ApiException(error))))
+            .onStatus(HttpStatus.NOT_ACCEPTABLE::equals, response ->
+                response.bodyToMono(ApiErrorResponse.class)
+                    .flatMap(error -> Mono.error(new ApiException(error))))
+            .bodyToMono(ListLinksResponse.class)
+            .onErrorResume(ApiException.class, error -> {
+                return Mono.empty();
+            });
     }
+
 
     public Mono<LinkResponse> addTrackLink(Long chatId, AddLinkRequest request) {
         return scrapperWebClient.post()
